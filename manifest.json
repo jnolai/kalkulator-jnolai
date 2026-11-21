@@ -1,0 +1,19 @@
+{
+  "name": "Kalkulator Pintar - Edisi Pelajar",
+  "short_name": "Kalkulator",
+  "description": "Kalkulator mesra pelajar Malaysia dengan animasi anime dan perkongsian nota kiraan by JnolAi.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0F111A",
+  "theme_color": "#4F46E5",
+  "icons": [
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

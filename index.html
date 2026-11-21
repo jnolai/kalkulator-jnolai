@@ -1,0 +1,1791 @@
+<!DOCTYPE html>
+<html lang="ms" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#4F46E5">
+    <meta name="description" content="Kalkulator mesra pelajar Malaysia dengan animasi anime dan perkongsian nota kiraan by JnolAi.">
+    <link rel="manifest" href="./manifest.json">
+    <link rel="apple-touch-icon" href="./icon-512.png">
+    <title>Kalkulator Pintar - Gaya Android</title>
+    <!-- Tailwind CSS untuk penggayaan moden dan responsif -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono untuk paparan nombor yang jelas -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        // Palet Material Design 3 Digemari Pelajar Malaysia (Indigo Study Vibe + Emas Diraja)
+                        md: {
+                            lightBg: '#F3F4FA',
+                            lightSurface: '#FFFFFF',
+                            lightSurfaceVar: '#E6E8F5',
+                            lightPrimary: '#4F46E5',
+                            lightPrimaryContainer: '#E0E7FF',
+                            lightOnPrimaryContainer: '#1E1B4B',
+                            lightSecondaryContainer: '#E2E8F0',
+                            lightOnSecondaryContainer: '#1E293B',
+                            lightTertiaryContainer: '#FEF3C7',
+                            lightOnTertiaryContainer: '#92400E',
+
+                            darkBg: '#0F111A',
+                            darkSurface: '#171A26',
+                            darkSurfaceVar: '#232738',
+                            darkPrimary: '#818CF8',
+                            darkPrimaryContainer: '#312E81',
+                            darkOnPrimaryContainer: '#E0E7FF',
+                            darkSecondaryContainer: '#2A3042',
+                            darkOnSecondaryContainer: '#CBD5E1',
+                            darkTertiaryContainer: '#453214',
+                            darkOnTertiaryContainer: '#FDE68A',
+                        }
+                    },
+                    animation: {
+                        'shake': 'shake 0.4s cubic-bezier(.36,.07,.19,.97) both',
+                        'pop-in': 'popIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
+                        'slide-up': 'slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'anime-jump': 'animeJump 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
+                        'anime-float': 'animeFloat 2.8s ease-in-out infinite',
+                        'sparkle-spin': 'sparkleSpin 1.6s ease-out forwards',
+                    },
+                    keyframes: {
+                        shake: {
+                            '10%, 90%': { transform: 'translate3d(-2px, 0, 0)' },
+                            '20%, 80%': { transform: 'translate3d(4px, 0, 0)' },
+                            '30%, 50%, 70%': { transform: 'translate3d(-6px, 0, 0)' },
+                            '40%, 60%': { transform: 'translate3d(6px, 0, 0)' }
+                        },
+                        popIn: {
+                            '0%': { opacity: '0', transform: 'translateY(10px) scale(0.95)' },
+                            '100%': { opacity: '1', transform: 'translateY(0) scale(1)' }
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(16px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        },
+                        animeJump: {
+                            '0%': { opacity: '0', transform: 'translateY(65px) scale(0.4) rotate(-8deg)' },
+                            '60%': { opacity: '1', transform: 'translateY(-10px) scale(1.06) rotate(3deg)' },
+                            '80%': { transform: 'translateY(3px) scale(0.98) rotate(-1deg)' },
+                            '100%': { opacity: '1', transform: 'translateY(0) scale(1) rotate(0deg)' }
+                        },
+                        animeFloat: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-5px)' }
+                        },
+                        sparkleSpin: {
+                            '0%': { opacity: '0', transform: 'scale(0) rotate(0deg)' },
+                            '40%': { opacity: '1', transform: 'scale(1.25) rotate(90deg)' },
+                            '100%': { opacity: '0', transform: 'scale(0.5) rotate(180deg) translateY(-22px)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Menghalang pemilihan teks secara tidak sengaja pada peranti mudah alih */
+        * {
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        body {
+            overscroll-behavior-y: contain;
+        }
+
+        /* Kesan Riak Air (Material Ripple Effect) */
+        .calc-btn {
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.14s cubic-bezier(0.34, 1.56, 0.64, 1), 
+                        background-color 0.2s ease, 
+                        box-shadow 0.2s ease,
+                        filter 0.15s ease;
+        }
+
+        .calc-btn:active {
+            transform: scale(0.91);
+        }
+
+        /* Kelas animasi lantunan apabila diklik melalui papan kekunci atau sentuhan */
+        .btn-bounce {
+            animation: btnSpring 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes btnSpring {
+            0% { transform: scale(1); }
+            35% { transform: scale(0.88); }
+            75% { transform: scale(1.04); }
+            100% { transform: scale(1); }
+        }
+
+        span.ripple {
+            position: absolute;
+            border-radius: 50%;
+            transform: scale(0);
+            animation: rippleAnim 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+            pointer-events: none;
+        }
+
+        @keyframes rippleAnim {
+            to {
+                transform: scale(3.5);
+                opacity: 0;
+            }
+        }
+
+        /* Bar skrol tersembunyi untuk paparan ungkapan panjang */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Transisi licin untuk skrin keputusan */
+        .result-transition {
+            transition: all 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        /* Kesan kaca kabur (Glassmorphism) untuk laci sejarah */
+        .glass-drawer {
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        /* Ekor Buih Dialog Anime (Speech Bubble Tail) */
+        .speech-tail::after {
+            content: '';
+            position: absolute;
+            left: -8px;
+            bottom: 14px;
+            width: 0;
+            height: 0;
+            border-top: 7px solid transparent;
+            border-bottom: 7px solid transparent;
+            border-right: 9px solid #ffffff;
+        }
+        .dark .speech-tail::after {
+            border-right-color: #232738;
+        }
+    </style>
+</head>
+<body class="bg-slate-200 dark:bg-[#090A10] min-h-screen flex items-center justify-center p-0 sm:p-4 transition-colors duration-300 font-sans">
+
+    <!-- Bingkai Utama Aplikasi Android (Responsif: Skrin penuh di telefon, bingkai telefon elegan di desktop) -->
+    <main id="app-frame" class="relative w-full h-[100dvh] sm:h-[820px] sm:max-w-[400px] bg-md-lightBg dark:bg-md-darkBg text-slate-900 dark:text-slate-100 sm:rounded-[2.75rem] sm:border-[6px] sm:border-indigo-200/80 dark:sm:border-[#232738] shadow-2xl flex flex-col overflow-hidden transition-colors duration-300">
+        
+        <!-- Bar Status Gaya Android (Hanya hiasan halus pada skrin besar) -->
+        <div class="hidden sm:flex items-center justify-between px-7 pt-3 pb-1 text-[11px] font-medium text-slate-500 dark:text-slate-400 select-none">
+            <span id="status-clock">12:00</span>
+            <div class="w-16 h-4 bg-slate-900 dark:bg-black rounded-full mx-auto"></div>
+            <div class="flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21L15.6 16.2C14.6 15.45 13.35 15 12 15C10.65 15 9.4 15.45 8.4 16.2L12 21ZM12 3C7.95 3 4.21 4.34 1.2 6.6L3 9C5.5 7.12 8.62 6 12 6C15.38 6 18.5 7.12 21 9L22.8 6.6C19.79 4.34 16.05 3 12 3ZM12 9C9.3 9 6.81 9.89 4.8 11.4L6.6 13.8C8.1 12.67 9.97 12 12 12C14.03 12 15.9 12.67 17.4 13.8L19.2 11.4C17.19 9.89 14.7 9 12 9Z"/></svg>
+                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+            </div>
+        </div>
+
+        <!-- Bar Atas Aplikasi (Top App Bar) -->
+        <header class="flex items-center justify-between px-5 pt-4 pb-2 z-10">
+            <div class="flex items-center gap-2.5">
+                <div id="app-logo-badge" class="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-600 to-violet-600 dark:from-indigo-500 dark:to-purple-500 flex items-center justify-center text-white shadow-sm shadow-indigo-500/30">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <rect x="4" y="2" width="16" height="20" rx="3"></rect>
+                        <line x1="8" y1="6" x2="16" y2="6"></line>
+                        <line x1="8" y1="10" x2="8.01" y2="10"></line>
+                        <line x1="12" y1="10" x2="12.01" y2="10"></line>
+                        <line x1="16" y1="10" x2="16.01" y2="10"></line>
+                        <line x1="8" y1="14" x2="8.01" y2="14"></line>
+                        <line x1="12" y1="14" x2="12.01" y2="14"></line>
+                        <line x1="16" y1="14" x2="16.01" y2="14"></line>
+                        <line x1="8" y1="18" x2="12" y2="18"></line>
+                        <line x1="16" y1="18" x2="16.01" y2="18"></line>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-sm font-bold tracking-tight text-slate-800 dark:text-slate-100 leading-none">Kalkulator</h1>
+                    <span id="app-subtitle-tag" class="text-[10px] font-semibold text-indigo-600 dark:text-indigo-400">Edisi Pelajar MY</span>
+                </div>
+            </div>
+
+            <!-- Kawalan Pantas: Palet Pelajar, Sejarah, Bunyi, Tema -->
+            <div class="flex items-center gap-1.5">
+                <!-- Butang Tukar Gaya Warna Pelajar -->
+                <button id="btn-palette" title="Tukar Gaya Warna Pelajar" aria-label="Tukar Gaya Warna" class="p-2.5 rounded-full bg-md-lightSurfaceVar/80 dark:bg-md-darkSurfaceVar/80 hover:bg-md-lightSurfaceVar dark:hover:bg-md-darkSurfaceVar text-indigo-600 dark:text-indigo-300 transition-all active:scale-90">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+                    </svg>
+                </button>
+
+                <!-- Butang Sejarah Kiraan -->
+                <button id="btn-history" title="Sejarah Kiraan" aria-label="Buka Sejarah Kiraan" class="p-2.5 rounded-full bg-md-lightSurfaceVar/80 dark:bg-md-darkSurfaceVar/80 hover:bg-md-lightSurfaceVar dark:hover:bg-md-darkSurfaceVar text-slate-700 dark:text-slate-200 transition-all active:scale-90 relative">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span id="history-badge" class="hidden absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-indigo-500 dark:bg-indigo-400"></span>
+                </button>
+
+                <!-- Butang Kesan Bunyi -->
+                <button id="btn-sound" title="Togol Kesan Bunyi" aria-label="Togol Kesan Bunyi" class="p-2.5 rounded-full bg-md-lightSurfaceVar/70 dark:bg-md-darkSurfaceVar/70 hover:bg-md-lightSurfaceVar dark:hover:bg-md-darkSurfaceVar text-slate-700 dark:text-slate-200 transition-all active:scale-90">
+                    <!-- Ikon Bunyi Aktif -->
+                    <svg id="icon-sound-on" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                    </svg>
+                    <!-- Ikon Bunyi Senyap -->
+                    <svg id="icon-sound-off" class="w-4 h-4 hidden text-rose-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+                    </svg>
+                </button>
+
+                <!-- Butang Mod Gelap / Terang -->
+                <button id="btn-theme" title="Tukar Tema Gelap/Terang" aria-label="Tukar Tema" class="p-2.5 rounded-full bg-md-lightSurfaceVar/70 dark:bg-md-darkSurfaceVar/70 hover:bg-md-lightSurfaceVar dark:hover:bg-md-darkSurfaceVar text-slate-700 dark:text-slate-200 transition-all active:scale-90">
+                    <!-- Ikon Matahari (Untuk mod gelap -> tukar ke terang) -->
+                    <svg id="icon-sun" class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                    <!-- Ikon Bulan (Untuk mod terang -> tukar ke gelap) -->
+                    <svg id="icon-moon" class="w-4 h-4 hidden text-slate-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Skrin Paparan Kiraan (Display Area) -->
+        <section id="display-container" class="flex-1 flex flex-col justify-end px-6 pb-4 pt-2 relative overflow-hidden">
+            <!-- Pemberitahuan Mini (Toast) untuk salinan atau status -->
+            <div id="toast-msg" class="absolute top-2 left-1/2 -translate-x-1/2 bg-slate-800/90 dark:bg-slate-200/95 text-white dark:text-slate-900 text-xs font-medium px-3.5 py-1.5 rounded-full shadow-lg opacity-0 pointer-events-none transition-all duration-300 transform -translate-y-2 z-20">
+                Disalin ke papan keratan
+            </div>
+
+            <!-- Bekas Kemunculan Watak Anime Chibi & Buih Dialog -->
+            <div id="anime-companion" class="hidden items-end gap-2.5 mb-auto mt-1 z-20 pointer-events-auto relative">
+                <!-- Bekas Zarah Kilauan & Konfeti -->
+                <div id="anime-particles" class="absolute inset-0 pointer-events-none overflow-visible"></div>
+
+                <!-- Avatar Watak Anime Chibi SVG (Terperinci & Beranimasi) -->
+                <div id="anime-avatar-wrapper" class="relative w-20 h-20 sm:w-22 sm:h-22 shrink-0 animate-anime-float cursor-pointer" title="Ketik untuk sembunyikan">
+                    <svg id="anime-chibi-svg" viewBox="0 0 140 140" class="w-full h-full drop-shadow-md overflow-visible">
+                        <defs>
+                            <linearGradient id="hairGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#818CF8"/>
+                                <stop offset="55%" stop-color="#6366F1"/>
+                                <stop offset="100%" stop-color="#4338CA"/>
+                            </linearGradient>
+                            <linearGradient id="hairHighlight" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" stop-color="#E0E7FF" stop-opacity="0.9"/>
+                                <stop offset="100%" stop-color="#818CF8" stop-opacity="0"/>
+                            </linearGradient>
+                            <linearGradient id="skinGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" stop-color="#FFF1E6"/>
+                                <stop offset="100%" stop-color="#FFE0CC"/>
+                            </linearGradient>
+                            <linearGradient id="eyeIris" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" stop-color="#3730A3"/>
+                                <stop offset="55%" stop-color="#6366F1"/>
+                                <stop offset="100%" stop-color="#A5B4FC"/>
+                            </linearGradient>
+                            <linearGradient id="uniformGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#1E1B4B"/>
+                                <stop offset="100%" stop-color="#312E81"/>
+                            </linearGradient>
+                        </defs>
+
+                        <!-- Rambut Belakang & Ekor Kuda Berkembar (Twin Tails) -->
+                        <path d="M32 58 C12 65, 8 96, 22 114 C27 104, 30 92, 36 82 Z" fill="url(#hairGrad)"/>
+                        <path d="M108 58 C128 65, 132 96, 118 114 C113 104, 110 92, 104 82 Z" fill="url(#hairGrad)"/>
+                        <ellipse cx="70" cy="64" rx="44" ry="42" fill="url(#hairGrad)"/>
+
+                        <!-- Badan Pakaian Seragam Comel & Riben -->
+                        <path d="M44 108 C44 96, 96 96, 96 108 L104 134 C82 138, 58 138, 36 134 Z" fill="url(#uniformGrad)"/>
+                        <!-- Kolar Putih -->
+                        <path d="M52 102 L70 116 L88 102 L82 98 L70 108 L58 98 Z" fill="#FFFFFF"/>
+                        <!-- Riben Merah Jambu -->
+                        <polygon points="70,113 59,107 61,119" fill="#FB7185"/>
+                        <polygon points="70,113 81,107 79,119" fill="#FB7185"/>
+                        <circle cx="70" cy="113" r="3.5" fill="#F43F5E"/>
+
+                        <!-- Tangan Comel Mengangkat Tanda Sokongan -->
+                        <circle cx="40" cy="116" r="7.5" fill="url(#skinGrad)"/>
+                        <circle cx="100" cy="112" r="7.5" fill="url(#skinGrad)"/>
+
+                        <!-- Muka Chibi -->
+                        <path d="M34 62 C34 38, 106 38, 106 62 C106 89, 90 103, 70 103 C50 103, 34 89, 34 62 Z" fill="url(#skinGrad)"/>
+
+                        <!-- Pipi Kemerahan (Blush) -->
+                        <ellipse cx="46" cy="79" rx="6.5" ry="3.5" fill="#FDA4AF" opacity="0.75"/>
+                        <ellipse cx="94" cy="79" rx="6.5" ry="3.5" fill="#FDA4AF" opacity="0.75"/>
+                        <line x1="43" y1="78" x2="45" y2="81" stroke="#F43F5E" stroke-width="1.2" stroke-linecap="round"/>
+                        <line x1="47" y1="78" x2="49" y2="81" stroke="#F43F5E" stroke-width="1.2" stroke-linecap="round"/>
+                        <line x1="91" y1="78" x2="93" y2="81" stroke="#F43F5E" stroke-width="1.2" stroke-linecap="round"/>
+                        <line x1="95" y1="78" x2="97" y2="81" stroke="#F43F5E" stroke-width="1.2" stroke-linecap="round"/>
+
+                        <!-- Ekspresi 1: Gembira / Teruja (Mata Besar Berkilau) -->
+                        <g id="expr-happy">
+                            <!-- Kening -->
+                            <path d="M44 55 Q51 51 58 55" fill="none" stroke="#0369A1" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M82 55 Q89 51 96 55" fill="none" stroke="#0369A1" stroke-width="2" stroke-linecap="round"/>
+                            <!-- Mata Kiri -->
+                            <ellipse cx="51" cy="68" rx="8.5" ry="10.5" fill="#0F172A"/>
+                            <ellipse cx="51" cy="69.5" rx="7" ry="8.5" fill="url(#eyeIris)"/>
+                            <circle cx="51" cy="69" r="3.5" fill="#042F2E"/>
+                            <circle cx="48" cy="64" r="3" fill="#FFFFFF"/>
+                            <circle cx="54" cy="73" r="1.5" fill="#FFFFFF"/>
+                            <!-- Mata Kanan -->
+                            <ellipse cx="89" cy="68" rx="8.5" ry="10.5" fill="#0F172A"/>
+                            <ellipse cx="89" cy="69.5" rx="7" ry="8.5" fill="url(#eyeIris)"/>
+                            <circle cx="89" cy="69" r="3.5" fill="#042F2E"/>
+                            <circle cx="86" cy="64" r="3" fill="#FFFFFF"/>
+                            <circle cx="92" cy="73" r="1.5" fill="#FFFFFF"/>
+                            <!-- Mulut Tersenyum Ceria -->
+                            <path d="M63 85 Q70 94 77 85 Z" fill="#FB7185" stroke="#E11D48" stroke-width="1.5" stroke-linejoin="round"/>
+                            <path d="M65 89 Q70 93 75 89" fill="#FECDD3"/>
+                        </g>
+
+                        <!-- Ekspresi 2: Teruja Melampau / Nombor Besar (Mata Bintang & Mulut Ternganga) -->
+                        <g id="expr-excited" class="hidden">
+                            <path d="M43 53 Q51 48 58 54" fill="none" stroke="#0369A1" stroke-width="2.2" stroke-linecap="round"/>
+                            <path d="M82 54 Q89 48 97 53" fill="none" stroke="#0369A1" stroke-width="2.2" stroke-linecap="round"/>
+                            <!-- Bintang Mata Kiri -->
+                            <polygon points="51,57 54,64 61,65 55,70 57,77 51,73 45,77 47,70 41,65 48,64" fill="#FBBF24" stroke="#D97706" stroke-width="1"/>
+                            <circle cx="49" cy="65" r="2" fill="#FFFFFF"/>
+                            <!-- Bintang Mata Kanan -->
+                            <polygon points="89,57 92,64 99,65 93,70 95,77 89,73 83,77 85,70 79,65 86,64" fill="#FBBF24" stroke="#D97706" stroke-width="1"/>
+                            <circle cx="87" cy="65" r="2" fill="#FFFFFF"/>
+                            <!-- Mulut Teruja -->
+                            <ellipse cx="70" cy="87" rx="6.5" ry="7.5" fill="#FB7185" stroke="#E11D48" stroke-width="1.5"/>
+                        </g>
+
+                        <!-- Ekspresi 3: Bangga / Tenang / Nombor Negatif (Mata Tertutup Senyum ^ ^) -->
+                        <g id="expr-proud" class="hidden">
+                            <path d="M44 55 Q51 52 58 55" fill="none" stroke="#0369A1" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M82 55 Q89 52 96 55" fill="none" stroke="#0369A1" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M43 69 Q51 60 59 69" fill="none" stroke="#0F172A" stroke-width="3" stroke-linecap="round"/>
+                            <path d="M81 69 Q89 60 97 69" fill="none" stroke="#0F172A" stroke-width="3" stroke-linecap="round"/>
+                            <!-- Mulut Kucing Comel (ω) -->
+                            <path d="M62 85 Q66 90 70 85 Q74 90 78 85" fill="none" stroke="#E11D48" stroke-width="2.2" stroke-linecap="round"/>
+                        </g>
+
+                        <!-- Ekspresi 4: Pening / Ralat Kiraan (Mata Berpusing > <) -->
+                        <g id="expr-dizzy" class="hidden">
+                            <path d="M43 57 L58 53" fill="none" stroke="#0369A1" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M97 57 L82 53" fill="none" stroke="#0369A1" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M44 63 L56 68 L44 73" fill="none" stroke="#0F172A" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M96 63 L84 68 L96 73" fill="none" stroke="#0F172A" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+                            <!-- Mulut Beralun -->
+                            <path d="M62 87 Q66 83 70 87 Q74 91 78 87" fill="none" stroke="#E11D48" stroke-width="2" stroke-linecap="round"/>
+                        </g>
+
+                        <!-- Rambut Hadapan (Bangs) & Antena Ahoge -->
+                        <path d="M70 22 C66 10, 82 6, 86 16 C80 15, 74 18, 73 24 Z" fill="url(#hairGrad)"/>
+                        <path d="M31 64 C28 34, 48 20, 70 20 C92 20, 112 34, 109 64 C104 52, 98 46, 92 56 C88 45, 81 42, 75 55 C70 43, 63 43, 58 55 C52 44, 43 48, 38 58 C35 54, 33 59, 31 64 Z" fill="url(#hairGrad)"/>
+                        <!-- Kilauan Rambut -->
+                        <path d="M44 36 Q70 28 96 36 Q70 35 44 36 Z" fill="url(#hairHighlight)"/>
+                        <!-- Klip Rambut Bintang -->
+                        <polygon points="97,42 99,46 104,46 100,49 101,53 97,50 93,53 94,49 90,46 95,46" fill="#FDE047" stroke="#EAB308" stroke-width="0.8"/>
+                    </svg>
+                </div>
+
+                <!-- Buih Dialog Ceria (Speech Bubble) -->
+                <div id="anime-speech-bubble" class="speech-tail relative flex-1 bg-white dark:bg-md-darkSurfaceVar text-slate-800 dark:text-slate-100 px-3.5 py-2.5 rounded-2xl shadow-lg border border-indigo-500/25 dark:border-indigo-400/25 mb-2">
+                    <div class="flex items-center justify-between gap-2 mb-0.5">
+                        <span id="anime-mood-tag" class="text-[10px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-300">
+                            ✨ Kiraan Selesai!
+                        </span>
+                        <button id="btn-dismiss-anime" title="Tutup" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs leading-none p-0.5">
+                            ✕
+                        </button>
+                    </div>
+                    <p id="anime-speech-text" class="text-xs sm:text-[13px] font-semibold leading-snug text-slate-700 dark:text-slate-100">
+                        Sugoi! Jawapannya ialah 0!
+                    </p>
+                </div>
+            </div>
+
+            <!-- Baris Ungkapan Matematik -->
+            <div class="w-full overflow-x-auto no-scrollbar text-right mb-1">
+                <div id="expression-display" class="font-mono text-xl sm:text-2xl text-slate-500 dark:text-slate-400 tracking-wide whitespace-nowrap transition-all duration-300 min-h-[2rem]">
+                    0
+                </div>
+            </div>
+
+            <!-- Baris Pratonton Langsung / Keputusan Utama -->
+            <div id="result-wrapper" class="w-full overflow-x-auto no-scrollbar text-right flex items-center justify-end min-h-[4.25rem]">
+                <div id="result-display" title="Ketik untuk salin jawapan" class="font-mono text-4xl sm:text-5xl font-bold text-slate-900 dark:text-white tracking-tight whitespace-nowrap cursor-pointer result-transition">
+                    0
+                </div>
+            </div>
+
+            <!-- Penunjuk Tarik ke Bawah untuk Sejarah -->
+            <div id="pull-indicator" class="w-10 h-1 bg-slate-300 dark:bg-slate-700 rounded-full mx-auto mt-3 opacity-60 cursor-pointer hover:opacity-100 transition-opacity" title="Buka Sejarah Kiraan"></div>
+        </section>
+
+        <!-- Pad Kekunci Kalkulator (Material Design 3 Grid) -->
+        <section class="bg-md-lightSurface dark:bg-md-darkSurface rounded-t-[2.25rem] p-4 sm:p-5 pb-6 sm:pb-7 shadow-[0_-8px_30px_rgba(0,0,0,0.04)] dark:shadow-[0_-8px_30px_rgba(0,0,0,0.3)] transition-colors duration-300">
+            <div class="grid grid-cols-4 gap-2.5 sm:gap-3">
+                
+                <!-- Baris 1: AC, Kurungan (), Peratus %, Bahagi ÷ -->
+                <button data-action="clear" data-key="Escape" class="calc-btn h-14 sm:h-16 rounded-2xl sm:rounded-3xl bg-rose-100 dark:bg-rose-950/70 text-rose-700 dark:text-rose-300 font-bold text-lg sm:text-xl flex items-center justify-center shadow-sm hover:brightness-95 dark:hover:brightness-110">
+                    AC
+                </button>
+                <button data-action="parentheses" data-key="(" class="calc-btn h-14 sm:h-16 rounded-2xl sm:rounded-3xl bg-md-lightSecondaryContainer dark:bg-md-darkSecondaryContainer text-md-lightOnSecondaryContainer dark:text-md-darkOnSecondaryContainer font-semibold text-lg sm:text-xl flex items-center justify-center shadow-sm hover:brightness-95 dark:hover:brightness-110">
+                    ( )
+                </button>
+                <button data-action="percent" data-key="%" class="calc-btn h-14 sm:h-16 rounded-2xl sm:rounded-3xl bg-md-lightSecondaryContainer dark:bg-md-darkSecondaryContainer text-md-lightOnSecondaryContainer dark:text-md-darkOnSecondaryContainer font-semibold text-lg sm:text-xl flex items-center justify-center shadow-sm hover:brightness-95 dark:hover:brightness-110">
+                    %
+                </button>
+                <button data-action="operator" data-value="÷" data-key="/" class="calc-btn h-14 sm:h-16 rounded-2xl sm:rounded-3xl bg-md-lightTertiaryContainer dark:bg-md-darkTertiaryContainer text-md-lightOnTertiaryContainer dark:text-md-darkOnTertiaryContainer font-bold text-2xl flex items-center justify-center shadow-sm hover:brightness-95 dark:hover:brightness-110">
+                    ÷
+                </button>
+
+                <!-- Baris 2: 7, 8, 9, Darab × -->
+                <button data-action="number" data-value="7" data-key="7" class="calc-btn h-14 sm:h-16 rounded-2xl sm:rounded-3xl bg-md-lightSurfaceVar/60 dark:bg-md-darkSurfaceVar text-slate-800 dark:text-slate-100 font-mono font-semibold text-xl sm:text-2xl flex items-center justify-center hover:bg-md-lightSurfaceVar dark:hover:brightness-110">
+                    7
+                </button>
+                <button data-action="number" data-value="8" data-key="8" class="calc-btn h-14 sm:h-16 rounded-2xl sm:rounded-3xl bg-md-lightSurfaceVar/60 dark:bg-md-darkSurfaceVar text-slate-800 dark:text-slate-100 font-mono font-semibold text-xl sm:text-2xl flex items-center justify-center hover:bg-md-lightSurfaceVar dark:hover:brightness-110">
+                    8
+                </button>
+                <button data-action="number" data-value="9" data-key="9" class="calc-btn h-14 sm:h-16 rounded-2xl sm:rounded-3xl bg-md-lightSurfaceVar/60 dark:bg-md-darkSurfaceVar text-slate-800 dark:text-slate-100 font-mono font-semibold text-xl sm:text-2xl flex items-center justify-center hover:bg-md-lightSurfaceVar dark:hover:brightness-110">
+                    9
+                </button>
+                <button data-action="operator" data-value="×" data-key="*" class="calc-btn h-14 sm:h-16 rounded-2xl sm:rounded-3xl bg-md-lightTertiaryContainer dark:bg-md-darkTertiaryContainer text-md-lightOnTertiaryContainer dark:text-md-darkOnTertiaryContainer font-bold text-2xl flex items-center justify-center shadow-sm hover:brightness-95 dark:hover:brightness-110">
+                    ×
+                </button>
+
+                <!-- Baris 3: 4, 5, 6, Tolak - -->
+                <button data-action="number" data-value="4" data-key="4" class="calc-btn h-14 sm:h-16 rounded-2xl sm:rounded-3xl bg-md-lightSurfaceVar/60 dark:bg-md-darkSurfaceVar text-slate-800 dark:text-slate-100 font-mono font-semibold text-xl sm:text-2xl flex items-center justify-center hover:bg-md-lightSurfaceVar dark:hover:brightness-110">
+                    4
+                </button>
+                <button data-action="number" data-value="5" data-key="5" class="calc-btn h-14 sm:h-16 rounded-2xl sm:rounded-3xl bg-md-lightSurfaceVar/60 dark:bg-md-darkSurfaceVar text-slate-800 dark:text-slate-100 font-mono font-semibold text-xl sm:text-2xl flex items-center justify-center hover:bg-md-lightSurfaceVar dark:hover:brightness-110">
+                    5
+                </button>
+                <button data-action="number" data-value="6" data-key="6" class="calc-btn h-14 sm:h-16 rounded-2xl sm:rounded-3xl bg-md-lightSurfaceVar/60 dark:bg-md-darkSurfaceVar text-slate-800 dark:text-slate-100 font-mono font-semibold text-xl sm:text-2xl flex items-center justify-center hover:bg-md-lightSurfaceVar dark:hover:brightness-110">
+                    6
+                </button>
+                <button data-action="operator" data-value="−" data-key="-" class="calc-btn h-14 sm:h-16 rounded-2xl sm:rounded-3xl bg-md-lightTertiaryContainer dark:bg-md-darkTertiaryContainer text-md-lightOnTertiaryContainer dark:text-md-darkOnTertiaryContainer font-bold text-2xl flex items-center justify-center shadow-sm hover:brightness-95 dark:hover:brightness-110">
+                    −
+                </button>
+
+                <!-- Baris 4: 1, 2, 3, Tambah + -->
+                <button data-action="number" data-value="1" data-key="1" class="calc-btn h-14 sm:h-16 rounded-2xl sm:rounded-3xl bg-md-lightSurfaceVar/60 dark:bg-md-darkSurfaceVar text-slate-800 dark:text-slate-100 font-mono font-semibold text-xl sm:text-2xl flex items-center justify-center hover:bg-md-lightSurfaceVar dark:hover:brightness-110">
+                    1
+                </button>
+                <button data-action="number" data-value="2" data-key="2" class="calc-btn h-14 sm:h-16 rounded-2xl sm:rounded-3xl bg-md-lightSurfaceVar/60 dark:bg-md-darkSurfaceVar text-slate-800 dark:text-slate-100 font-mono font-semibold text-xl sm:text-2xl flex items-center justify-center hover:bg-md-lightSurfaceVar dark:hover:brightness-110">
+                    2
+                </button>
+                <button data-action="number" data-value="3" data-key="3" class="calc-btn h-14 sm:h-16 rounded-2xl sm:rounded-3xl bg-md-lightSurfaceVar/60 dark:bg-md-darkSurfaceVar text-slate-800 dark:text-slate-100 font-mono font-semibold text-xl sm:text-2xl flex items-center justify-center hover:bg-md-lightSurfaceVar dark:hover:brightness-110">
+                    3
+                </button>
+                <button data-action="operator" data-value="+" data-key="+" class="calc-btn h-14 sm:h-16 rounded-2xl sm:rounded-3xl bg-md-lightTertiaryContainer dark:bg-md-darkTertiaryContainer text-md-lightOnTertiaryContainer dark:text-md-darkOnTertiaryContainer font-bold text-2xl flex items-center justify-center shadow-sm hover:brightness-95 dark:hover:brightness-110">
+                    +
+                </button>
+
+                <!-- Baris 5: +/-, 0, Titik Perpuluhan (.), Padam (⌫), Sama Dengan (=) -> Susunan 5 butang atau 4 lajur -->
+                <!-- Susunan standard 4 lajur Android: [+/-] [0] [.] [⌫] dan butang [=] atau [0] [.] [⌫] [=] dengan [+/-] di atas/bawah. Mari guna susunan 4x5 yang lengkap dengan semua ciri diminta: [+/-], [0], [.], [⌫] dan baris akhir atau susunan pintar -->
+                <button data-action="toggle-sign" title="Positif / Negatif" class="calc-btn h-14 sm:h-16 rounded-2xl sm:rounded-3xl bg-md-lightSurfaceVar/60 dark:bg-md-darkSurfaceVar text-slate-700 dark:text-slate-200 font-semibold text-lg flex items-center justify-center hover:bg-md-lightSurfaceVar dark:hover:brightness-110">
+                    +/−
+                </button>
+                <button data-action="number" data-value="0" data-key="0" class="calc-btn h-14 sm:h-16 rounded-2xl sm:rounded-3xl bg-md-lightSurfaceVar/60 dark:bg-md-darkSurfaceVar text-slate-800 dark:text-slate-100 font-mono font-semibold text-xl sm:text-2xl flex items-center justify-center hover:bg-md-lightSurfaceVar dark:hover:brightness-110">
+                    0
+                </button>
+                <button data-action="decimal" data-key="." class="calc-btn h-14 sm:h-16 rounded-2xl sm:rounded-3xl bg-md-lightSurfaceVar/60 dark:bg-md-darkSurfaceVar text-slate-800 dark:text-slate-100 font-mono font-bold text-2xl flex items-center justify-center hover:bg-md-lightSurfaceVar dark:hover:brightness-110">
+                    .
+                </button>
+                <button data-action="backspace" data-key="Backspace" title="Padam Satu Aksara" class="calc-btn h-14 sm:h-16 rounded-2xl sm:rounded-3xl bg-md-lightSecondaryContainer/70 dark:bg-md-darkSecondaryContainer/70 text-slate-800 dark:text-slate-100 flex items-center justify-center hover:brightness-95 dark:hover:brightness-110">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M3 12l6.414 6.414a2 2 0 001.414.586H19a2 2 0 002-2V7a2 2 0 00-2-2h-8.172a2 2 0 00-1.414.586L3 12z" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Butang Sama Dengan (=) Lebar Penuh dengan Kesan Bercahaya & Animasi Khas -->
+            <button id="btn-equals" data-action="equals" data-key="Enter" class="calc-btn w-full h-14 sm:h-15 mt-2.5 sm:mt-3 rounded-2xl sm:rounded-3xl bg-gradient-to-r from-indigo-600 via-violet-600 to-purple-600 dark:from-indigo-500 dark:via-violet-500 dark:to-purple-500 text-white font-bold text-2xl sm:text-3xl flex items-center justify-center shadow-lg shadow-indigo-600/30 dark:shadow-indigo-500/25 hover:brightness-110">
+                =
+            </button>
+
+            <!-- Footer Kredit -->
+            <footer class="mt-2.5 pt-1 text-center">
+                <span class="text-[11px] font-medium tracking-wide text-slate-400 dark:text-slate-500">
+                    by <strong id="footer-brand" class="font-semibold text-indigo-600 dark:text-indigo-400">JnolAi</strong>
+                </span>
+            </footer>
+        </section>
+
+        <!-- Laci Sejarah Kiraan (Slide-out Drawer dalam Bahasa Melayu) -->
+        <div id="history-overlay" class="fixed inset-0 bg-black/40 backdrop-blur-xs z-30 opacity-0 pointer-events-none transition-opacity duration-300"></div>
+        
+        <aside id="history-drawer" class="absolute inset-x-0 bottom-0 h-[72%] bg-white/95 dark:bg-[#161D1B]/95 glass-drawer rounded-t-[2.25rem] shadow-2xl z-40 transform translate-y-full transition-transform duration-300 cubic-bezier(0.22, 1, 0.36, 1) flex flex-col border-t border-slate-200 dark:border-slate-800">
+            <!-- Pemegang Laci -->
+            <div class="pt-3 pb-2 flex justify-center cursor-pointer" id="close-history-handle">
+                <div class="w-12 h-1.5 rounded-full bg-slate-300 dark:bg-slate-700"></div>
+            </div>
+
+            <!-- Pengepala Sejarah -->
+            <div class="flex items-center justify-between px-6 py-3 border-b border-slate-200/70 dark:border-slate-800">
+                <div>
+                    <h2 class="text-base font-bold text-slate-900 dark:text-white">Sejarah Kiraan</h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Ketik untuk guna semula atau kongsi nota</p>
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <button id="btn-share-all-history" title="Kongsi Semua Nota Kiraan" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-indigo-100 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 hover:brightness-95 active:scale-95 transition-all hidden flex items-center gap-1">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                        </svg>
+                        <span>Kongsi</span>
+                    </button>
+                    <button id="btn-clear-history" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-rose-100 dark:bg-rose-950/80 text-rose-600 dark:text-rose-300 hover:brightness-95 active:scale-95 transition-all hidden">
+                        Padam
+                    </button>
+                    <button id="btn-close-history" title="Tutup" class="p-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:brightness-95 active:scale-90 transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Senarai Item Sejarah -->
+            <div id="history-list" class="flex-1 overflow-y-auto px-6 py-4 space-y-3">
+                <!-- Keadaan Kosong -->
+                <div id="history-empty" class="h-full flex flex-col items-center justify-center text-center py-8 opacity-75">
+                    <div class="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-3 text-slate-400">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                    <p class="text-sm font-semibold text-slate-700 dark:text-slate-300">Tiada sejarah kiraan lagi</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-[220px]">Setiap pengiraan yang selesai akan disimpan secara automatik di sini.</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Modal / Helaian Bawah (Bottom Sheet) Kongsi Nota Kiraan ke Pelbagai Platform -->
+        <div id="share-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-xs z-50 opacity-0 pointer-events-none transition-opacity duration-300 flex items-end sm:items-center justify-center p-0 sm:p-4">
+            <div id="share-sheet" class="w-full sm:max-w-[360px] bg-white dark:bg-[#1B2030] rounded-t-[2rem] sm:rounded-[2rem] p-5 shadow-2xl border-t sm:border border-slate-200 dark:border-slate-700/80 transform translate-y-full sm:translate-y-4 sm:scale-95 transition-all duration-300">
+                <!-- Pemegang & Pengepala -->
+                <div class="w-10 h-1 rounded-full bg-slate-300 dark:bg-slate-600 mx-auto mb-3 sm:hidden"></div>
+                <div class="flex items-center justify-between mb-3">
+                    <div>
+                        <h3 class="text-base font-bold text-slate-900 dark:text-white">Kongsi Nota Kiraan</h3>
+                        <p class="text-[11px] text-slate-500 dark:text-slate-400">Hantar ke aplikasi nota atau rakan sekelas</p>
+                    </div>
+                    <button id="btn-close-share" title="Tutup" class="p-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-300 hover:brightness-95 active:scale-90">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Pratonton Teks Nota -->
+                <div class="bg-slate-100/90 dark:bg-slate-900/80 rounded-2xl p-3 mb-4 border border-slate-200/80 dark:border-slate-800">
+                    <textarea id="share-note-preview" rows="5" readonly class="w-full bg-transparent font-mono text-xs text-slate-700 dark:text-slate-200 resize-none focus:outline-none leading-relaxed"></textarea>
+                </div>
+
+                <!-- Pilihan Platform Perkongsian -->
+                <div class="grid grid-cols-4 gap-2 mb-3">
+                    <!-- Kongsi Sistem Android (Native Web Share API) -->
+                    <button id="share-native" class="flex flex-col items-center gap-1.5 p-2.5 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 transition-all active:scale-95">
+                        <div class="w-10 h-10 rounded-full bg-indigo-600 text-white flex items-center justify-center shadow-sm">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                            </svg>
+                        </div>
+                        <span class="text-[11px] font-semibold">Semua App</span>
+                    </button>
+
+                    <!-- WhatsApp -->
+                    <button id="share-whatsapp" class="flex flex-col items-center gap-1.5 p-2.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 transition-all active:scale-95">
+                        <div class="w-10 h-10 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-sm">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.1.824z"/>
+                            </svg>
+                        </div>
+                        <span class="text-[11px] font-semibold">WhatsApp</span>
+                    </button>
+
+                    <!-- Telegram -->
+                    <button id="share-telegram" class="flex flex-col items-center gap-1.5 p-2.5 rounded-2xl bg-sky-50 dark:bg-sky-950/60 hover:bg-sky-100 dark:hover:bg-sky-900/60 text-sky-700 dark:text-sky-300 transition-all active:scale-95">
+                        <div class="w-10 h-10 rounded-full bg-sky-500 text-white flex items-center justify-center shadow-sm">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+                            </svg>
+                        </div>
+                        <span class="text-[11px] font-semibold">Telegram</span>
+                    </button>
+
+                    <!-- E-mel / Nota -->
+                    <button id="share-email" class="flex flex-col items-center gap-1.5 p-2.5 rounded-2xl bg-amber-50 dark:bg-amber-950/60 hover:bg-amber-100 dark:hover:bg-amber-900/60 text-amber-700 dark:text-amber-300 transition-all active:scale-95">
+                        <div class="w-10 h-10 rounded-full bg-amber-500 text-white flex items-center justify-center shadow-sm">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                        <span class="text-[11px] font-semibold">E-mel</span>
+                    </button>
+                </div>
+
+                <!-- Butang Salin & Muat Turun Fail .TXT untuk Nota -->
+                <div class="grid grid-cols-2 gap-2">
+                    <button id="share-copy" class="py-2.5 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:brightness-95 text-slate-800 dark:text-slate-100 text-xs font-semibold flex items-center justify-center gap-1.5 active:scale-95 transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                        <span>Salin Nota</span>
+                    </button>
+                    <button id="share-download-txt" class="py-2.5 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:brightness-95 text-slate-800 dark:text-slate-100 text-xs font-semibold flex items-center justify-center gap-1.5 active:scale-95 transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                        <span>Simpan .TXT</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        /**
+         * Aplikasi Kalkulator Pintar Gaya Android (Bahasa Melayu)
+         * Mengandungi enjin pengiraan tepat, sintesis audio Web Audio API,
+         * kesan riak Material Design, dan penyimpanan sejarah tempatan.
+         */
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Elemen DOM ---
+            const expressionDisplay = document.getElementById('expression-display');
+            const resultDisplay = document.getElementById('result-display');
+            const resultWrapper = document.getElementById('result-wrapper');
+            const toastMsg = document.getElementById('toast-msg');
+            
+            // Kawalan Bar Atas & Laci
+            const btnPalette = document.getElementById('btn-palette');
+            const btnEquals = document.getElementById('btn-equals');
+            const appLogoBadge = document.getElementById('app-logo-badge');
+            const appSubtitleTag = document.getElementById('app-subtitle-tag');
+            const footerBrand = document.getElementById('footer-brand');
+            const btnTheme = document.getElementById('btn-theme');
+            const iconSun = document.getElementById('icon-sun');
+            const iconMoon = document.getElementById('icon-moon');
+            const btnSound = document.getElementById('btn-sound');
+            const iconSoundOn = document.getElementById('icon-sound-on');
+            const iconSoundOff = document.getElementById('icon-sound-off');
+            const btnHistory = document.getElementById('btn-history');
+            const historyBadge = document.getElementById('history-badge');
+            const historyDrawer = document.getElementById('history-drawer');
+            const historyOverlay = document.getElementById('history-overlay');
+            const btnCloseHistory = document.getElementById('btn-close-history');
+            const closeHistoryHandle = document.getElementById('close-history-handle');
+            const btnClearHistory = document.getElementById('btn-clear-history');
+            const btnShareAllHistory = document.getElementById('btn-share-all-history');
+            const historyList = document.getElementById('history-list');
+            const historyEmpty = document.getElementById('history-empty');
+            const pullIndicator = document.getElementById('pull-indicator');
+
+            // Elemen Modal Kongsi Nota
+            const shareOverlay = document.getElementById('share-overlay');
+            const shareSheet = document.getElementById('share-sheet');
+            const shareNotePreview = document.getElementById('share-note-preview');
+            const btnCloseShare = document.getElementById('btn-close-share');
+            const btnShareNative = document.getElementById('share-native');
+            const btnShareWhatsapp = document.getElementById('share-whatsapp');
+            const btnShareTelegram = document.getElementById('share-telegram');
+            const btnShareEmail = document.getElementById('share-email');
+            const btnShareCopy = document.getElementById('share-copy');
+            const btnShareDownloadTxt = document.getElementById('share-download-txt');
+
+            // Elemen Watak Anime Chibi & Ekspresi
+            const animeCompanion = document.getElementById('anime-companion');
+            const animeAvatarWrapper = document.getElementById('anime-avatar-wrapper');
+            const animeSpeechBubble = document.getElementById('anime-speech-bubble');
+            const animeMoodTag = document.getElementById('anime-mood-tag');
+            const animeSpeechText = document.getElementById('anime-speech-text');
+            const animeParticles = document.getElementById('anime-particles');
+            const btnDismissAnime = document.getElementById('btn-dismiss-anime');
+            const exprGroups = {
+                happy: document.getElementById('expr-happy'),
+                excited: document.getElementById('expr-excited'),
+                proud: document.getElementById('expr-proud'),
+                dizzy: document.getElementById('expr-dizzy')
+            };
+
+            // --- Pemboleh Ubah Keadaan Aplikasi ---
+            let expression = '';
+            let isResultState = false;
+            let soundEnabled = true;
+            let animeHideTimer = null;
+            let historyData = [];
+            try {
+                historyData = JSON.parse(localStorage.getItem('kalkulator_my_history')) || [];
+            } catch (e) {
+                historyData = [];
+            }
+
+            // Kemas kini jam bar status Android
+            function updateStatusClock() {
+                const clockEl = document.getElementById('status-clock');
+                if (clockEl) {
+                    const now = new Date();
+                    clockEl.textContent = now.toLocaleTimeString('ms-MY', { hour: '2-digit', minute: '2-digit' });
+                }
+            }
+
+            // --- Koleksi Palet Warna Kegemaran Pelajar Malaysia ---
+            const studentThemes = [
+                {
+                    name: 'Indigo Study Vibe 💜',
+                    subtitle: 'Edisi Pelajar MY',
+                    equalsGrad: 'from-indigo-600 via-violet-600 to-purple-600 dark:from-indigo-500 dark:via-violet-500 dark:to-purple-500 shadow-indigo-600/30',
+                    logoGrad: 'from-indigo-600 to-violet-600 dark:from-indigo-500 dark:to-purple-500',
+                    accentText: 'text-indigo-600 dark:text-indigo-400',
+                    resultText: 'text-indigo-600 dark:text-indigo-300',
+                    opBg: 'bg-amber-100/90 dark:bg-amber-900/40 text-amber-800 dark:text-amber-200'
+                },
+                {
+                    name: 'Pink Sakura Aesthetic 🌸',
+                    subtitle: 'Gaya Sakura',
+                    equalsGrad: 'from-pink-500 via-rose-500 to-fuchsia-500 dark:from-pink-500 dark:via-rose-500 dark:to-fuchsia-500 shadow-pink-500/30',
+                    logoGrad: 'from-pink-500 to-rose-500',
+                    accentText: 'text-pink-600 dark:text-pink-400',
+                    resultText: 'text-pink-600 dark:text-pink-300',
+                    opBg: 'bg-pink-100/90 dark:bg-pink-950/60 text-pink-800 dark:text-pink-200'
+                },
+                {
+                    name: 'Casio Kelas Klasik 🎓',
+                    subtitle: 'Gaya Saintifik',
+                    equalsGrad: 'from-sky-600 via-blue-600 to-cyan-600 dark:from-sky-500 dark:via-blue-500 dark:to-cyan-500 shadow-sky-600/30',
+                    logoGrad: 'from-sky-600 to-blue-600',
+                    accentText: 'text-sky-600 dark:text-sky-400',
+                    resultText: 'text-sky-600 dark:text-sky-300',
+                    opBg: 'bg-sky-100/90 dark:bg-sky-950/60 text-sky-800 dark:text-sky-200'
+                },
+                {
+                    name: 'Matcha Latte Tenang 🍵',
+                    subtitle: 'Gaya Matcha',
+                    equalsGrad: 'from-emerald-600 via-teal-600 to-green-600 dark:from-emerald-500 dark:via-teal-500 dark:to-green-500 shadow-emerald-600/30',
+                    logoGrad: 'from-emerald-600 to-teal-600',
+                    accentText: 'text-emerald-600 dark:text-emerald-400',
+                    resultText: 'text-emerald-600 dark:text-emerald-300',
+                    opBg: 'bg-emerald-100/90 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-200'
+                }
+            ];
+            let currentPaletteIdx = 0;
+
+            function applyStudentPalette(idx) {
+                const t = studentThemes[idx];
+                btnEquals.className = `calc-btn w-full h-14 sm:h-15 mt-2.5 sm:mt-3 rounded-2xl sm:rounded-3xl bg-gradient-to-r ${t.equalsGrad} text-white font-bold text-2xl sm:text-3xl flex items-center justify-center shadow-lg hover:brightness-110`;
+                appLogoBadge.className = `w-8 h-8 rounded-xl bg-gradient-to-br ${t.logoGrad} flex items-center justify-center text-white shadow-sm`;
+                appSubtitleTag.textContent = t.subtitle;
+                appSubtitleTag.className = `text-[10px] font-semibold ${t.accentText}`;
+                footerBrand.className = `font-semibold ${t.accentText}`;
+                btnPalette.className = `p-2.5 rounded-full bg-md-lightSurfaceVar/80 dark:bg-md-darkSurfaceVar/80 hover:bg-md-lightSurfaceVar dark:hover:bg-md-darkSurfaceVar ${t.accentText} transition-all active:scale-90`;
+
+                document.querySelectorAll('.calc-btn[data-action="operator"]').forEach(opBtn => {
+                    opBtn.className = `calc-btn h-14 sm:h-16 rounded-2xl sm:rounded-3xl ${t.opBg} font-bold text-2xl flex items-center justify-center shadow-sm hover:brightness-95 dark:hover:brightness-110`;
+                });
+
+                if (isResultState) {
+                    updateDisplay(false);
+                }
+            }
+            updateStatusClock();
+            setInterval(updateStatusClock, 15000);
+
+            // --- Enjin Audio Web Audio API (Bunyi Lembut & Responsif) ---
+            let audioCtx = null;
+
+            function initAudio() {
+                if (!audioCtx) {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    if (AudioContext) {
+                        audioCtx = new AudioContext();
+                    }
+                }
+                if (audioCtx && audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+            }
+
+            function playSound(type = 'tap') {
+                if (!soundEnabled) return;
+                try {
+                    initAudio();
+                    if (!audioCtx) return;
+
+                    const now = audioCtx.currentTime;
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+
+                    if (type === 'tap') {
+                        // Bunyi ketikan lembut (soft tactile pop)
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(520, now);
+                        osc.frequency.exponentialRampToValueAtTime(220, now + 0.045);
+                        gain.gain.setValueAtTime(0.08, now);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.045);
+                        osc.start(now);
+                        osc.stop(now + 0.05);
+                    } else if (type === 'operator') {
+                        // Nada sedikit berbeza untuk operator
+                        osc.type = 'triangle';
+                        osc.frequency.setValueAtTime(640, now);
+                        osc.frequency.exponentialRampToValueAtTime(340, now + 0.055);
+                        gain.gain.setValueAtTime(0.07, now);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.055);
+                        osc.start(now);
+                        osc.stop(now + 0.06);
+                    } else if (type === 'clear') {
+                        // Bunyi sapuan turun untuk AC / Padam
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(420, now);
+                        osc.frequency.exponentialRampToValueAtTime(140, now + 0.09);
+                        gain.gain.setValueAtTime(0.09, now);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+                        osc.start(now);
+                        osc.stop(now + 0.095);
+                    } else if (type === 'equals') {
+                        // Melodi ceria 3-nota gaya anime ("Ta-da-da~!")
+                        osc.type = 'triangle';
+                        osc.frequency.setValueAtTime(523.25, now);        // C5
+                        osc.frequency.setValueAtTime(659.25, now + 0.075); // E5
+                        osc.frequency.setValueAtTime(1046.50, now + 0.15); // C6
+                        gain.gain.setValueAtTime(0.11, now);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.36);
+                        osc.start(now);
+                        osc.stop(now + 0.37);
+                    } else if (type === 'error') {
+                        // Nada rendah untuk ralat
+                        osc.type = 'sawtooth';
+                        osc.frequency.setValueAtTime(160, now);
+                        osc.frequency.linearRampToValueAtTime(120, now + 0.16);
+                        gain.gain.setValueAtTime(0.06, now);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
+                        osc.start(now);
+                        osc.stop(now + 0.17);
+                    }
+                } catch (err) {
+                    // Abaikan jika pelayar menyekat audio
+                }
+            }
+
+            // --- Kesan Visual Riak Air (Ripple) & Lantunan Butang ---
+            function triggerButtonAnimation(btn, event = null) {
+                // Tambah kelas lantunan
+                btn.classList.remove('btn-bounce');
+                void btn.offsetWidth; // Force reflow
+                btn.classList.add('btn-bounce');
+
+                // Cipta elemen riak
+                const circle = document.createElement('span');
+                const diameter = Math.max(btn.clientWidth, btn.clientHeight);
+                const radius = diameter / 2;
+                const rect = btn.getBoundingClientRect();
+
+                let clientX = rect.left + radius;
+                let clientY = rect.top + radius;
+
+                if (event && (event.clientX || (event.touches && event.touches[0]))) {
+                    clientX = event.clientX || event.touches[0].clientX;
+                    clientY = event.clientY || event.touches[0].clientY;
+                }
+
+                circle.style.width = circle.style.height = `${diameter}px`;
+                circle.style.left = `${clientX - rect.left - radius}px`;
+                circle.style.top = `${clientY - rect.top - radius}px`;
+                circle.classList.add('ripple');
+
+                // Warna riak mengikut tema & jenis butang
+                const isPrimary = btn.dataset.action === 'equals';
+                if (isPrimary) {
+                    circle.style.backgroundColor = 'rgba(255, 255, 255, 0.38)';
+                } else {
+                    circle.style.backgroundColor = document.documentElement.classList.contains('dark')
+                        ? 'rgba(255, 255, 255, 0.14)'
+                        : 'rgba(0, 106, 96, 0.14)';
+                }
+
+                const existingRipple = btn.querySelector('.ripple');
+                if (existingRipple) {
+                    existingRipple.remove();
+                }
+                btn.appendChild(circle);
+
+                // Getaran haptik peranti mudah alih jika disokong
+                if (navigator.vibrate) {
+                    navigator.vibrate(12);
+                }
+            }
+
+            // --- Pemformatan Nombor & Logik Pengiraan Selamat ---
+            function formatNumberDisplay(numStr) {
+                if (numStr === 'Ralat' || numStr === 'Tidak sah' || numStr === 'Infiniti') return numStr;
+                if (!numStr) return '0';
+                
+                // Format nombor dengan pemisah ribu tetapi kekalkan titik perpuluhan
+                const parts = numStr.toString().split('.');
+                parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                return parts.join('.');
+            }
+
+            function formatExpressionForUI(expr) {
+                if (!expr) return '0';
+                // Tambah ruang halus di sekeliling operator supaya mudah dibaca
+                return expr.replace(/([+\−×÷])/g, ' $1 ').replace(/\s+/g, ' ').trim();
+            }
+
+            /**
+             * Menilai ungkapan matematik dengan selamat tanpa menggunakan eval() mentah
+             */
+            function safeEvaluate(rawExpr) {
+                if (!rawExpr) return null;
+
+                // Tukar simbol paparan kepada operator JS standard
+                let sanitized = rawExpr
+                    .replace(/×/g, '*')
+                    .replace(/÷/g, '/')
+                    .replace(/−/g, '-')
+                    .replace(/,/g, '');
+
+                // Kendalikan peratusan: contoh 50% -> (50/100), atau 200 + 10% -> 200 + (200 * 10 / 100)
+                // Untuk kestabilan umum, tukar nombor% kepada (nombor/100)
+                sanitized = sanitized.replace(/(\d+(\.\d+)?)%/g, '($1/100)');
+
+                // Auto-tutup kurungan yang tidak lengkap
+                const openParens = (sanitized.match(/\(/g) || []).length;
+                const closeParens = (sanitized.match(/\)/g) || []).length;
+                if (openParens > closeParens) {
+                    sanitized += ')'.repeat(openParens - closeParens);
+                }
+
+                // Buang operator tergantung di hujung ungkapan untuk pratonton langsung
+                sanitized = sanitized.replace(/[+\-*/.]+$/, '');
+
+                if (!sanitized) return null;
+
+                // Pengesahan keselamatan aksara (hanya nombor, operator asas, kurungan, titik)
+                if (!/^[0-9+\-*/().\s]+$/.test(sanitized)) {
+                    throw new Error('Aksara tidak sah');
+                }
+
+                // Sokong pendaraban tersirat seperti 2(3) -> 2*(3) dan (2)(3) -> (2)*(3)
+                sanitized = sanitized
+                    .replace(/(\d)\(/g, '$1*(')
+                    .replace(/\)(\d)/g, ')*$1')
+                    .replace(/\)\(/g, ')*(');
+
+                // Kira menggunakan Function berpagar
+                const fn = new Function(`"use strict"; return (${sanitized});`);
+                const val = fn();
+
+                if (typeof val !== 'number' || Number.isNaN(val)) {
+                    throw new Error('Ralat pengiraan');
+                }
+                if (!Number.isFinite(val)) {
+                    return 'Tidak boleh bahagi 0';
+                }
+
+                // Betulkan ralat titik terapung JS (cth: 0.1 + 0.2 = 0.30000000000000004)
+                const rounded = Math.round((val + Number.EPSILON) * 1e10) / 1e10;
+                return rounded.toString();
+            }
+
+            // --- Kemas Kini Paparan Skrin ---
+            function updateDisplay(animateResult = false) {
+                const formattedExpr = formatExpressionForUI(expression);
+                expressionDisplay.textContent = formattedExpr;
+
+                // Laraskan saiz fon ungkapan jika terlalu panjang
+                if (formattedExpr.length > 22) {
+                    expressionDisplay.classList.remove('text-xl', 'sm:text-2xl');
+                    expressionDisplay.classList.add('text-base', 'sm:text-lg');
+                } else {
+                    expressionDisplay.classList.add('text-xl', 'sm:text-2xl');
+                    expressionDisplay.classList.remove('text-base', 'sm:text-lg');
+                }
+
+                // Tatal ke kanan secara automatik
+                expressionDisplay.parentElement.scrollLeft = expressionDisplay.parentElement.scrollWidth;
+
+                if (isResultState) {
+                    // Paparan selepas menekan '='
+                    expressionDisplay.classList.remove('text-slate-900', 'dark:text-white', 'font-semibold');
+                    expressionDisplay.classList.add('text-slate-500', 'dark:text-slate-400');
+
+                    resultDisplay.classList.remove('text-slate-400', 'dark:text-slate-500', 'text-2xl', 'sm:text-3xl');
+                    resultDisplay.classList.add('text-slate-900', 'dark:text-white', 'font-bold');
+                } else {
+                    // Pratonton langsung semasa menaip
+                    try {
+                        const preview = safeEvaluate(expression);
+                        if (preview !== null && preview !== expression && !preview.includes('Tidak boleh')) {
+                            resultDisplay.textContent = '= ' + formatNumberDisplay(preview);
+                            resultDisplay.classList.remove('text-slate-900', 'dark:text-white', 'text-4xl', 'sm:text-5xl');
+                            resultDisplay.classList.add('text-slate-400', 'dark:text-slate-500', 'text-2xl', 'sm:text-3xl');
+                        } else {
+                            resultDisplay.textContent = expression ? formatNumberDisplay(expression) : '0';
+                            resultDisplay.classList.remove('text-slate-400', 'dark:text-slate-500', 'text-2xl', 'sm:text-3xl');
+                            resultDisplay.classList.add('text-slate-900', 'dark:text-white', 'text-4xl', 'sm:text-5xl');
+                        }
+                    } catch {
+                        // Jika ungkapan belum lengkap, paparkan input semasa
+                        resultDisplay.textContent = expression ? expression : '0';
+                    }
+                }
+
+                // Laraskan saiz teks keputusan jika nombor sangat panjang
+                const currentTextLen = resultDisplay.textContent.length;
+                const activeResultColor = studentThemes[currentPaletteIdx].resultText;
+                if (isResultState) {
+                    if (currentTextLen > 14) {
+                        resultDisplay.className = `font-mono text-2xl sm:text-3xl font-bold ${activeResultColor} tracking-tight whitespace-nowrap cursor-pointer result-transition`;
+                    } else if (currentTextLen > 10) {
+                        resultDisplay.className = `font-mono text-3xl sm:text-4xl font-bold ${activeResultColor} tracking-tight whitespace-nowrap cursor-pointer result-transition`;
+                    } else {
+                        resultDisplay.className = `font-mono text-4xl sm:text-5xl font-bold ${activeResultColor} tracking-tight whitespace-nowrap cursor-pointer result-transition`;
+                    }
+                }
+
+                if (animateResult) {
+                    resultDisplay.classList.remove('animate-pop-in');
+                    void resultDisplay.offsetWidth;
+                    resultDisplay.classList.add('animate-pop-in');
+                }
+            }
+
+            // --- Pengendalian Input Butang Kalkulator ---
+            function handleInput(action, value = '') {
+                const operators = ['+', '−', '×', '÷'];
+
+                switch (action) {
+                    case 'number': {
+                        playSound('tap');
+                        if (isResultState) {
+                            expression = value;
+                            isResultState = false;
+                        } else {
+                            // Elakkan sifar berganda di hadapan nombor seperti 00
+                            const parts = expression.split(/[+\−×÷()]/);
+                            const lastNum = parts[parts.length - 1];
+                            if (lastNum === '0' && value === '0') return;
+                            if (lastNum === '0' && value !== '.') {
+                                expression = expression.slice(0, -1) + value;
+                            } else {
+                                expression += value;
+                            }
+                        }
+                        updateDisplay();
+                        break;
+                    }
+
+                    case 'decimal': {
+                        playSound('tap');
+                        if (isResultState) {
+                            expression = '0.';
+                            isResultState = false;
+                            updateDisplay();
+                            return;
+                        }
+                        const parts = expression.split(/[+\−×÷()]/);
+                        const lastNum = parts[parts.length - 1];
+                        if (lastNum.includes('.')) return; // Sudah ada titik perpuluhan
+                        if (lastNum === '') {
+                            expression += '0.';
+                        } else {
+                            expression += '.';
+                        }
+                        updateDisplay();
+                        break;
+                    }
+
+                    case 'operator': {
+                        playSound('operator');
+                        if (isResultState) {
+                            // Sambung kiraan menggunakan keputusan sebelumnya
+                            const cleanResult = resultDisplay.textContent.replace(/[^0-9.\-]/g, '');
+                            if (cleanResult && !isNaN(Number(cleanResult))) {
+                                expression = cleanResult + value;
+                            } else {
+                                expression = '0' + value;
+                            }
+                            isResultState = false;
+                            updateDisplay();
+                            return;
+                        }
+
+                        if (expression === '') {
+                            if (value === '−') {
+                                expression = '−';
+                                updateDisplay();
+                            }
+                            return;
+                        }
+
+                        const lastChar = expression.slice(-1);
+                        if (operators.includes(lastChar)) {
+                            // Gantikan operator terakhir jika pengguna menekan operator lain
+                            expression = expression.slice(0, -1) + value;
+                        } else if (lastChar === '(' && value !== '−') {
+                            return;
+                        } else {
+                            expression += value;
+                        }
+                        updateDisplay();
+                        break;
+                    }
+
+                    case 'parentheses': {
+                        playSound('operator');
+                        if (isResultState) {
+                            expression = '(';
+                            isResultState = false;
+                            updateDisplay();
+                            return;
+                        }
+
+                        const openCount = (expression.match(/\(/g) || []).length;
+                        const closeCount = (expression.match(/\)/g) || []).length;
+                        const lastChar = expression.slice(-1);
+
+                        if (openCount > closeCount && (/\d|\)|%/.test(lastChar))) {
+                            expression += ')';
+                        } else {
+                            expression += '(';
+                        }
+                        updateDisplay();
+                        break;
+                    }
+
+                    case 'percent': {
+                        playSound('operator');
+                        if (isResultState) {
+                            const cleanResult = resultDisplay.textContent.replace(/[^0-9.\-]/g, '');
+                            if (cleanResult) {
+                                expression = cleanResult + '%';
+                                isResultState = false;
+                                updateDisplay();
+                            }
+                            return;
+                        }
+                        const lastChar = expression.slice(-1);
+                        if (/\d|\)/.test(lastChar)) {
+                            expression += '%';
+                            updateDisplay();
+                        }
+                        break;
+                    }
+
+                    case 'toggle-sign': {
+                        playSound('tap');
+                        if (isResultState) {
+                            const cleanResult = resultDisplay.textContent.replace(/[^0-9.\-]/g, '');
+                            if (cleanResult && cleanResult !== '0') {
+                                expression = cleanResult.startsWith('-') ? cleanResult.slice(1) : '−' + cleanResult;
+                                isResultState = false;
+                                updateDisplay();
+                            }
+                            return;
+                        }
+
+                        if (!expression) {
+                            expression = '−';
+                            updateDisplay();
+                            return;
+                        }
+
+                        // Cari nombor terakhir dalam ungkapan untuk ditukar tandanya
+                        const match = expression.match(/(.*?)(\(−\d+\.?\d*\)|\d+\.?\d*)$/);
+                        if (match) {
+                            const prefix = match[1];
+                            const target = match[2];
+                            if (target.startsWith('(−') && target.endsWith(')')) {
+                                expression = prefix + target.slice(2, -1);
+                            } else {
+                                expression = prefix + '(−' + target + ')';
+                            }
+                            updateDisplay();
+                        }
+                        break;
+                    }
+
+                    case 'backspace': {
+                        playSound('clear');
+                        if (isResultState) {
+                            isResultState = false;
+                            updateDisplay();
+                            return;
+                        }
+                        if (expression.length > 0) {
+                            expression = expression.slice(0, -1);
+                            updateDisplay();
+                        }
+                        break;
+                    }
+
+                    case 'clear': {
+                        playSound('clear');
+                        expression = '';
+                        isResultState = false;
+                        hideAnimeCompanion();
+                        expressionDisplay.textContent = '0';
+                        resultDisplay.textContent = '0';
+                        resultDisplay.className = 'font-mono text-4xl sm:text-5xl font-bold text-slate-900 dark:text-white tracking-tight whitespace-nowrap cursor-pointer result-transition animate-pop-in';
+                        break;
+                    }
+
+                    case 'equals': {
+                        if (!expression) return;
+                        try {
+                            const finalVal = safeEvaluate(expression);
+                            if (finalVal === null) return;
+
+                            if (finalVal === 'Tidak boleh bahagi 0') {
+                                triggerError('Tidak boleh bahagi dengan sifar');
+                                showAnimeCompanion('Tidak boleh bahagi 0', 'error');
+                                return;
+                            }
+
+                            playSound('equals');
+                            const completedExpr = formatExpressionForUI(expression);
+                            const formattedAnswer = formatNumberDisplay(finalVal);
+
+                            // Simpan dalam sejarah jika ungkapan mempunyai operasi atau perubahan
+                            if (completedExpr !== formattedAnswer) {
+                                addToHistory(completedExpr, finalVal);
+                            }
+
+                            expressionDisplay.textContent = completedExpr + ' =';
+                            expressionDisplay.classList.remove('animate-slide-up');
+                            void expressionDisplay.offsetWidth;
+                            expressionDisplay.classList.add('animate-slide-up');
+
+                            isResultState = true;
+                            resultDisplay.textContent = formattedAnswer;
+                            updateDisplay(true);
+
+                            // Munculkan watak anime chibi bersama jawapan!
+                            showAnimeCompanion(formattedAnswer, Number(finalVal));
+
+                        } catch (err) {
+                            triggerError('Format kiraan tidak sah');
+                            showAnimeCompanion('Ralat', 'error');
+                        }
+                        break;
+                    }
+                }
+            }
+
+            /**
+             * Memaparkan watak anime chibi dengan ekspresi, dialog Bahasa Melayu & kesan kilauan
+             */
+            function showAnimeCompanion(formattedAnswer, numericOrStatus) {
+                clearTimeout(animeHideTimer);
+
+                // Tentukan mood & dialog berdasarkan jenis jawapan
+                let mood = 'happy';
+                let tagText = '✨ Kiraan Selesai!';
+                let quotes = [];
+
+                if (numericOrStatus === 'error') {
+                    mood = 'dizzy';
+                    tagText = '💫 Alamak, Ralat!';
+                    quotes = [
+                        'Eh?! Nombor tu tak boleh dikira lah~ Cuba semak balik!',
+                        'Pening kepala saya! Format kiraan macam tak kena je~',
+                        'Uwaa~ Jangan bahagi dengan sifar tau!'
+                    ];
+                } else if (numericOrStatus < 0) {
+                    mood = 'proud';
+                    tagText = '❄️ Nombor Negatif';
+                    quotes = [
+                        `Fufu~ Jawapannya ${formattedAnswer}! Senang je ni~`,
+                        `Aha! Dapat nombor negatif: ${formattedAnswer}!`,
+                        `Tepat sekali! Hasilnya ialah ${formattedAnswer}~`
+                    ];
+                } else if (Math.abs(numericOrStatus) >= 10000) {
+                    mood = 'excited';
+                    tagText = '🌟 Nombor Besar!';
+                    quotes = [
+                        `Sugoi!! Besarnya nombor ni: ${formattedAnswer}!`,
+                        `Wahh, hebatnya! Jawapannya ialah ${formattedAnswer}!`,
+                        `Kira-kira tahap dewa! Hasilnya ${formattedAnswer}!`
+                    ];
+                } else {
+                    mood = 'happy';
+                    tagText = '✨ Tepat Sekali!';
+                    quotes = [
+                        `Wah, jawapannya ialah ${formattedAnswer}!`,
+                        `Sugoi! Tepat sekali, ${formattedAnswer}!`,
+                        `Senang je ni~ Jawapannya ${formattedAnswer}!`,
+                        `Yay! Kita dapat ${formattedAnswer}!`
+                    ];
+                }
+
+                // Tukar ekspresi wajah SVG
+                Object.keys(exprGroups).forEach(key => {
+                    if (exprGroups[key]) {
+                        exprGroups[key].classList.toggle('hidden', key !== mood);
+                    }
+                });
+
+                // Pilih dialog rawak yang ceria
+                const chosenQuote = quotes[Math.floor(Math.random() * quotes.length)];
+                animeMoodTag.textContent = tagText;
+                animeSpeechText.textContent = chosenQuote;
+
+                // Papar & mainkan semula animasi melompat masuk
+                animeCompanion.classList.remove('hidden');
+                animeCompanion.classList.add('flex');
+
+                animeCompanion.classList.remove('animate-anime-jump');
+                void animeCompanion.offsetWidth;
+                animeCompanion.classList.add('animate-anime-jump');
+
+                animeSpeechBubble.classList.remove('animate-pop-in');
+                void animeSpeechBubble.offsetWidth;
+                animeSpeechBubble.classList.add('animate-pop-in');
+
+                // Cetuskan zarah kilauan & konfeti di sekeliling watak anime
+                spawnAnimeSparkles(mood !== 'dizzy');
+
+                // Sembunyikan secara automatik selepas 7 saat jika pengguna tidak berinteraksi
+                animeHideTimer = setTimeout(() => {
+                    hideAnimeCompanion();
+                }, 7000);
+            }
+
+            function hideAnimeCompanion() {
+                clearTimeout(animeHideTimer);
+                animeCompanion.classList.add('hidden');
+                animeCompanion.classList.remove('flex');
+            }
+
+            function spawnAnimeSparkles(isCelebration = true) {
+                animeParticles.innerHTML = '';
+                const icons = isCelebration ? ['✨', '⭐', '💫', '🎉', '💠'] : ['💦', '❓', '💫'];
+                const positions = [
+                    { top: '-8px', left: '4px', delay: '0s' },
+                    { top: '-12px', left: '54px', delay: '0.08s' },
+                    { top: '18px', left: '-10px', delay: '0.14s' },
+                    { top: '6px', left: '72px', delay: '0.05s' },
+                    { top: '-14px', left: '28px', delay: '0.18s' }
+                ];
+
+                positions.forEach((pos, idx) => {
+                    const span = document.createElement('span');
+                    span.textContent = icons[idx % icons.length];
+                    span.className = 'absolute text-sm select-none animate-sparkle-spin';
+                    span.style.top = pos.top;
+                    span.style.left = pos.left;
+                    span.style.animationDelay = pos.delay;
+                    animeParticles.appendChild(span);
+                });
+            }
+
+            function triggerError(message) {
+                playSound('error');
+                resultWrapper.classList.remove('animate-shake');
+                void resultWrapper.offsetWidth;
+                resultWrapper.classList.add('animate-shake');
+                showToast(message);
+            }
+
+            function showToast(text) {
+                toastMsg.textContent = text;
+                toastMsg.classList.remove('opacity-0', '-translate-y-2');
+                toastMsg.classList.add('opacity-100', 'translate-y-0');
+
+                clearTimeout(window.toastTimer);
+                window.toastTimer = setTimeout(() => {
+                    toastMsg.classList.remove('opacity-100', 'translate-y-0');
+                    toastMsg.classList.add('opacity-0', '-translate-y-2');
+                }, 2000);
+            }
+
+            // --- Pengurusan Sejarah Kiraan (Bahasa Melayu) ---
+            function addToHistory(exprStr, rawResult) {
+                const now = new Date();
+                const timeStr = now.toLocaleTimeString('ms-MY', { hour: '2-digit', minute: '2-digit' });
+
+                historyData.unshift({
+                    id: Date.now(),
+                    expression: exprStr,
+                    result: rawResult,
+                    time: timeStr
+                });
+
+                // Hadkan kepada 30 rekod terkini
+                if (historyData.length > 30) {
+                    historyData.pop();
+                }
+
+                saveHistory();
+                renderHistory();
+            }
+
+            function saveHistory() {
+                try {
+                    localStorage.setItem('kalkulator_my_history', JSON.stringify(historyData));
+                } catch (e) {
+                    console.warn('Gagal menyimpan sejarah:', e);
+                }
+            }
+
+            function renderHistory() {
+                // Buang item lama kecuali elemen keadaan kosong
+                Array.from(historyList.children).forEach(child => {
+                    if (child.id !== 'history-empty') {
+                        child.remove();
+                    }
+                });
+
+                if (historyData.length === 0) {
+                    historyEmpty.classList.remove('hidden');
+                    btnClearHistory.classList.add('hidden');
+                    btnShareAllHistory.classList.add('hidden');
+                    historyBadge.classList.add('hidden');
+                    return;
+                }
+
+                historyEmpty.classList.add('hidden');
+                btnClearHistory.classList.remove('hidden');
+                btnShareAllHistory.classList.remove('hidden');
+                historyBadge.classList.remove('hidden');
+
+                historyData.forEach((item, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'p-3.5 rounded-2xl bg-slate-100/80 dark:bg-slate-800/70 hover:bg-md-lightSecondaryContainer/50 dark:hover:bg-md-darkSecondaryContainer/50 border border-transparent hover:border-md-lightPrimary/30 dark:hover:border-md-darkPrimary/30 cursor-pointer transition-all active:scale-[0.98] text-right group';
+                    
+                    card.innerHTML = `
+                        <div class="flex items-center justify-between text-[11px] text-slate-400 dark:text-slate-500 mb-1">
+                            <div class="flex items-center gap-2">
+                                <span class="group-hover:text-md-lightPrimary dark:group-hover:text-md-darkPrimary transition-colors">Ketik untuk guna</span>
+                                <span class="text-slate-300 dark:text-slate-700">•</span>
+                                <span>${item.time}</span>
+                            </div>
+                            <button type="button" data-share-idx="${index}" title="Kongsi Kiraan Ini" class="btn-share-item px-2 py-0.5 rounded-lg bg-indigo-100/80 dark:bg-indigo-950/90 text-indigo-600 dark:text-indigo-300 hover:brightness-95 flex items-center gap-1 text-[10px] font-semibold transition-all">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                                </svg>
+                                <span>Kongsi</span>
+                            </button>
+                        </div>
+                        <div class="font-mono text-sm text-slate-600 dark:text-slate-300 break-all">${item.expression}</div>
+                        <div class="font-mono text-xl font-bold text-md-lightPrimary dark:text-md-darkPrimary mt-0.5">= ${formatNumberDisplay(item.result)}</div>
+                    `;
+
+                    // Butang kongsi satu item sejarah
+                    const shareItemBtn = card.querySelector('.btn-share-item');
+                    shareItemBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        openShareModal([item]);
+                    });
+
+                    card.addEventListener('click', () => {
+                        playSound('tap');
+                        expression = item.result.toString().replace('-', '−');
+                        isResultState = false;
+                        updateDisplay(true);
+                        closeHistoryDrawer();
+                        showToast('Kiraan dimuatkan semula');
+                    });
+
+                    historyList.appendChild(card);
+                });
+            }
+
+            // --- Enjin Format & Perkongsian Nota Kiraan ---
+            function formatHistoryAsNote(items) {
+                const todayStr = new Date().toLocaleDateString('ms-MY', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric'
+                });
+                let lines = [
+                    `📝 NOTA KIRAAN (${todayStr})`,
+                    `────────────────────`
+                ];
+                items.forEach((item, i) => {
+                    const prefix = items.length > 1 ? `${i + 1}. ` : '';
+                    lines.push(`${prefix}${item.expression} = ${formatNumberDisplay(item.result)} (${item.time})`);
+                });
+                lines.push(`────────────────────`);
+                lines.push(`Dikira dengan Kalkulator Pintar by JnolAi`);
+                return lines.join('\n');
+            }
+
+            function openShareModal(items) {
+                if (!items || items.length === 0) return;
+                playSound('operator');
+                shareNotePreview.value = formatHistoryAsNote(items);
+                shareOverlay.classList.remove('opacity-0', 'pointer-events-none');
+                shareSheet.classList.remove('translate-y-full', 'sm:translate-y-4', 'sm:scale-95');
+            }
+
+            function closeShareModal() {
+                playSound('tap');
+                shareOverlay.classList.add('opacity-0', 'pointer-events-none');
+                shareSheet.classList.add('translate-y-full', 'sm:translate-y-4', 'sm:scale-95');
+            }
+
+            function copyNoteFallback(text) {
+                shareNotePreview.select();
+                shareNotePreview.setSelectionRange(0, 99999);
+                try {
+                    document.execCommand('copy');
+                    showToast('Nota kiraan disalin ke papan keratan!');
+                } catch (err) {
+                    if (navigator.clipboard) {
+                        navigator.clipboard.writeText(text).then(() => {
+                            showToast('Nota kiraan disalin!');
+                        });
+                    }
+                }
+            }
+
+            function openHistoryDrawer() {
+                playSound('tap');
+                renderHistory();
+                historyOverlay.classList.remove('opacity-0', 'pointer-events-none');
+                historyDrawer.classList.remove('translate-y-full');
+            }
+
+            function closeHistoryDrawer() {
+                playSound('tap');
+                historyOverlay.classList.add('opacity-0', 'pointer-events-none');
+                historyDrawer.classList.add('translate-y-full');
+            }
+
+            // --- Pendengar Acara (Event Listeners) ---
+
+            // Semua butang kalkulator
+            document.querySelectorAll('.calc-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    triggerButtonAnimation(btn, e);
+                    const action = btn.dataset.action;
+                    const value = btn.dataset.value || '';
+                    handleInput(action, value);
+                });
+            });
+
+            // Salin jawapan apabila mengetik paparan keputusan
+            resultDisplay.addEventListener('click', () => {
+                const rawText = resultDisplay.textContent.replace(/^=\s*/, '').replace(/,/g, '');
+                if (rawText && rawText !== '0') {
+                    const tempInput = document.createElement('textarea');
+                    tempInput.value = rawText;
+                    document.body.appendChild(tempInput);
+                    tempInput.select();
+                    try {
+                        document.execCommand('copy');
+                        playSound('tap');
+                        showToast(`Disalin: ${resultDisplay.textContent.replace(/^=\s*/, '')}`);
+                    } catch (e) {}
+                    document.body.removeChild(tempInput);
+                }
+            });
+
+            // Pendengar Acara Perkongsian Nota Sejarah
+            btnShareAllHistory.addEventListener('click', () => {
+                openShareModal(historyData);
+            });
+            btnCloseShare.addEventListener('click', closeShareModal);
+            shareOverlay.addEventListener('click', (e) => {
+                if (e.target === shareOverlay) closeShareModal();
+            });
+
+            btnShareNative.addEventListener('click', async () => {
+                const noteText = shareNotePreview.value;
+                playSound('tap');
+                if (navigator.share) {
+                    try {
+                        await navigator.share({
+                            title: 'Nota Kiraan Matematik',
+                            text: noteText
+                        });
+                        closeShareModal();
+                    } catch (err) {
+                        // Pengguna membatalkan dialog kongsi
+                    }
+                } else {
+                    copyNoteFallback(noteText);
+                }
+            });
+
+            btnShareWhatsapp.addEventListener('click', () => {
+                playSound('tap');
+                const url = `https://wa.me/?text=${encodeURIComponent(shareNotePreview.value)}`;
+                window.open(url, '_blank', 'noopener,noreferrer');
+            });
+
+            btnShareTelegram.addEventListener('click', () => {
+                playSound('tap');
+                const url = `https://t.me/share/url?url=${encodeURIComponent(' ')}&text=${encodeURIComponent(shareNotePreview.value)}`;
+                window.open(url, '_blank', 'noopener,noreferrer');
+            });
+
+            btnShareEmail.addEventListener('click', () => {
+                playSound('tap');
+                const subject = encodeURIComponent('Nota Kiraan Matematik');
+                const body = encodeURIComponent(shareNotePreview.value);
+                window.location.href = `mailto:?subject=${subject}&body=${body}`;
+            });
+
+            btnShareCopy.addEventListener('click', () => {
+                playSound('tap');
+                copyNoteFallback(shareNotePreview.value);
+            });
+
+            btnShareDownloadTxt.addEventListener('click', () => {
+                playSound('tap');
+                const blob = new Blob([shareNotePreview.value], { type: 'text/plain;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Nota_Kiraan_${new Date().toISOString().slice(0, 10)}.txt`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                showToast('Fail nota (.TXT) dimuat turun!');
+            });
+
+            // Togol Tema Gelap / Terang
+            btnTheme.addEventListener('click', () => {
+                playSound('tap');
+                const htmlEl = document.documentElement;
+                const isDark = htmlEl.classList.toggle('dark');
+                if (isDark) {
+                    iconSun.classList.remove('hidden');
+                    iconMoon.classList.add('hidden');
+                    showToast('Mod Gelap diaktifkan');
+                } else {
+                    iconSun.classList.add('hidden');
+                    iconMoon.classList.remove('hidden');
+                    showToast('Mod Terang diaktifkan');
+                }
+            });
+
+            // Togol Palet Warna Pelajar Malaysia
+            btnPalette.addEventListener('click', () => {
+                playSound('operator');
+                currentPaletteIdx = (currentPaletteIdx + 1) % studentThemes.length;
+                applyStudentPalette(currentPaletteIdx);
+                showToast(`Tema: ${studentThemes[currentPaletteIdx].name}`);
+            });
+
+            // Togol Kesan Bunyi
+            btnSound.addEventListener('click', () => {
+                soundEnabled = !soundEnabled;
+                if (soundEnabled) {
+                    iconSoundOn.classList.remove('hidden');
+                    iconSoundOff.classList.add('hidden');
+                    playSound('tap');
+                    showToast('Kesan bunyi diaktifkan');
+                } else {
+                    iconSoundOn.classList.add('hidden');
+                    iconSoundOff.classList.remove('hidden');
+                    showToast('Kesan bunyi dimatikan');
+                }
+            });
+
+            // Kawalan Laci Sejarah
+            btnHistory.addEventListener('click', openHistoryDrawer);
+            pullIndicator.addEventListener('click', openHistoryDrawer);
+            btnCloseHistory.addEventListener('click', closeHistoryDrawer);
+            closeHistoryHandle.addEventListener('click', closeHistoryDrawer);
+            historyOverlay.addEventListener('click', closeHistoryDrawer);
+
+            // Kawalan tutup / interaksi watak anime
+            btnDismissAnime.addEventListener('click', (e) => {
+                e.stopPropagation();
+                playSound('tap');
+                hideAnimeCompanion();
+            });
+            animeAvatarWrapper.addEventListener('click', () => {
+                playSound('tap');
+                spawnAnimeSparkles(true);
+            });
+
+            btnClearHistory.addEventListener('click', () => {
+                playSound('clear');
+                historyData = [];
+                saveHistory();
+                renderHistory();
+                showToast('Semua sejarah telah dipadam');
+            });
+
+            // Sokongan Papan Kekunci Fizikal (Untuk ujian di komputer)
+            document.addEventListener('keydown', (e) => {
+                // Jangan ganggu jika laci sejarah sedang terbuka kecuali Escape
+                if (!historyDrawer.classList.contains('translate-y-full')) {
+                    if (e.key === 'Escape') closeHistoryDrawer();
+                    return;
+                }
+
+                let targetSelector = null;
+                if (/^[0-9]$/.test(e.key)) {
+                    targetSelector = `.calc-btn[data-key="${e.key}"]`;
+                } else if (e.key === '+') {
+                    targetSelector = `.calc-btn[data-key="+"]`;
+                } else if (e.key === '-') {
+                    targetSelector = `.calc-btn[data-key="-"]`;
+                } else if (e.key === '*') {
+                    targetSelector = `.calc-btn[data-key="*"]`;
+                } else if (e.key === '/') {
+                    e.preventDefault();
+                    targetSelector = `.calc-btn[data-key="/"]`;
+                } else if (e.key === '.' || e.key === ',') {
+                    targetSelector = `.calc-btn[data-key="."]`;
+                } else if (e.key === '%') {
+                    targetSelector = `.calc-btn[data-key="%"]`;
+                } else if (e.key === '(' || e.key === ')') {
+                    targetSelector = `.calc-btn[data-key="("]`;
+                } else if (e.key === 'Enter' || e.key === '=') {
+                    e.preventDefault();
+                    targetSelector = `.calc-btn[data-key="Enter"]`;
+                } else if (e.key === 'Backspace') {
+                    targetSelector = `.calc-btn[data-key="Backspace"]`;
+                } else if (e.key === 'Escape' || e.key.toLowerCase() === 'c') {
+                    targetSelector = `.calc-btn[data-key="Escape"]`;
+                }
+
+                if (targetSelector) {
+                    const btn = document.querySelector(targetSelector);
+                    if (btn) {
+                        triggerButtonAnimation(btn);
+                        handleInput(btn.dataset.action, btn.dataset.value || '');
+                    }
+                }
+            });
+
+            // Mulakan paparan awal & semak lencana sejarah
+            applyStudentPalette(0);
+            renderHistory();
+            updateDisplay();
+
+            // Daftar Service Worker untuk mod luar talian (PWA / GitHub Pages)
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('./sw.js').catch(() => {
+                    // Abaikan jika dijalankan secara tempatan tanpa pelayan HTTP
+                });
+            }
+        });
+    </script>
+</body>
+</html>

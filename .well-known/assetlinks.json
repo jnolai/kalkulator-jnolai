@@ -2,7 +2,7 @@
       "relation": ["delegate_permission/common.handle_all_urls"],
       "target": {
         "namespace": "android_app",
-        "package_name": "io.github.jnolai.twa",
+        "package_name": "com.jnolai.kalkulator",
         "sha256_cert_fingerprints": ["08:CC:22:EC:AC:5B:45:BF:C0:5F:E8:BC:16:F0:5A:2D:E6:2B:28:7C:8D:10:F4:CF:B5:15:90:28:6A:9A:47:02"]
       }
     }]
